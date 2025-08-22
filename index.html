@@ -1,268 +1,96 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Криптовалютная Игра от Кода!</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a; /* Tailwind slate-900 */
-            color: #e2e8f0; /* Tailwind slate-200 */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 1rem;
-            box-sizing: border-box;
-        }
-        .game-container {
-            background-color: #1e293b; /* Tailwind slate-800 */
-            border-radius: 1.5rem; /* Rounded xl */
-            padding: 2.5rem; /* p-10 */
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); /* shadow-lg */
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-            border: 1px solid #334155; /* Tailwind slate-700 */
-        }
-        .btn {
-            background-color: #3b82f6; /* Tailwind blue-500 */
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.75rem; /* Rounded lg */
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-            border: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .btn:hover {
-            background-color: #2563eb; /* Tailwind blue-600 */
-            transform: translateY(-2px);
-        }
-        .btn:active {
-            background-color: #1d4ed8; /* Tailwind blue-700 */
-            transform: translateY(0);
-        }
-        .btn:disabled {
-            background-color: #64748b; /* Tailwind slate-500 */
-            cursor: not-allowed;
-            transform: none;
-        }
-        input[type="number"] {
-            background-color: #334155; /* Tailwind slate-700 */
-            border: 1px solid #475569; /* Tailwind slate-600 */
-            color: #e2e8f0;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem; /* Rounded md */
-            width: 80px;
-            text-align: center;
-            margin-right: 0.5rem;
-        }
-        .message {
-            margin-top: 1.5rem;
-            padding: 0.75rem;
-            border-radius: 0.75rem;
-            background-color: #334155; /* Tailwind slate-700 */
-            color: #94a3b8; /* Tailwind slate-400 */
-            min-height: 2.5rem; /* To prevent CLS */
-        }
-    </style>
-</head>
-<body>
-    <div class="game-container">
-        <h1 class="text-4xl font-bold mb-6 text-blue-400">Криптовалютная Игра</h1>
+import React from 'react';
+import { Github, Linkedin, Twitter, Instagram, Globe } from 'lucide-react'; // Используем lucide-react для иконок
 
-        <div class="mb-6 space-y-3">
-            <p class="text-xl">Текущая цена: <span id="cryptoPrice" class="font-bold text-green-400">$100.00</span></p>
-            <p class="text-xl">Баланс: <span id="fiatBalance" class="font-bold text-yellow-400">$1000.00</span></p>
-            <p class="text-xl">Мои монеты: <span id="cryptoOwned" class="font-bold text-purple-400">0.00</span></p>
+const App = () => {
+  // Данные для профиля (можно легко изменить)
+  const profileData = {
+    name: 'Имя Фамилия',
+    title: 'Веб-разработчик | Креативный кодер',
+    bio: [
+      'Привет! Я веб-разработчик с многолетним опытом создания динамичных и адаптивных веб-приложений. Моя страсть — превращать сложные идеи в интуитивно понятные пользовательские интерфейсы.',
+      'Я специализируюсь на React, Tailwind CSS и современных JavaScript-фреймворках, всегда стремясь к чистому коду и лучшим практикам разработки. В свободное время я люблю исследовать новые технологии и заниматься творческим кодированием.',
+      'Буду рад сотрудничеству и новым интересным проектам!'
+    ],
+    bannerUrl: 'https://placehold.co/1200x300/1e293b/94a3b8?text=ФОН ПРОФИЛЯ', // Placeholder banner image
+    avatarUrl: 'https://placehold.co/150x150/60a5fa/ffffff?text=АВАТАР', // Placeholder avatar image
+    socialLinks: [
+      { name: 'GitHub', icon: Github, url: 'https://github.com/uglykode' },
+      { name: 'Telegram Channel', icon: Globe, url: 'https://t.me/KodePage' },
+    ],
+  };
+
+  // Функция для обработки переходов по ссылкам (используем switch case для эмуляции навигации)
+  const handleSocialClick = (url) => {
+    switch (url) {
+      case 'https://github.com/uglykode':
+      case 'https://t.me/KodePage':
+        window.open(url, '_blank'); // Открываем в новой вкладке
+        break;
+      default:
+        console.log('Неизвестная ссылка:', url);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-900 text-slate-200 flex flex-col items-center p-4 sm:p-6">
+      <div className="w-full max-w-4xl bg-slate-800 rounded-xl shadow-xl overflow-hidden border border-slate-700">
+        {/* Баннер профиля */}
+        <div className="relative h-48 sm:h-64 bg-slate-700 flex items-center justify-center">
+          <img
+            src={profileData.bannerUrl}
+            alt="Баннер профиля"
+            className="w-full h-full object-cover"
+            onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/1200x300/1e293b/94a3b8?text=ФОН ПРОФИЛЯ'; }} // Fallback image
+          />
+          {/* Аватар профиля */}
+          <div className="absolute -bottom-16 sm:-bottom-20 left-1/2 -translate-x-1/2">
+            <img
+              src={profileData.avatarUrl}
+              alt="Аватар профиля"
+              className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-slate-800 object-cover shadow-lg transition-transform duration-300 hover:scale-105"
+              onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/150x150/60a5fa/ffffff?text=АВАТАР'; }} // Fallback image
+            />
+          </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <button id="mineBtn" class="btn flex-col py-3">
-                <span class="text-2xl">⛏️</span>
-                <span class="mt-1">Майнить (0.1 койнов)</span>
-            </button>
-            <div class="flex flex-col items-center justify-center">
-                <div class="flex items-center mb-2">
-                    <input type="number" id="buyAmount" value="1" min="1" class="rounded-md">
-                    <button id="buyBtn" class="btn">Купить</button>
-                </div>
-                <p class="text-sm text-slate-400">Купить койны</p>
-            </div>
-            <div class="flex flex-col items-center justify-center">
-                <div class="flex items-center mb-2">
-                    <input type="number" id="sellAmount" value="1" min="1" class="rounded-md">
-                    <button id="sellBtn" class="btn">Продать</button>
-                </div>
-                <p class="text-sm text-slate-400">Продать койны</p>
-            </div>
-        </div>
+        {/* Информация о профиле */}
+        <div className="pt-20 pb-8 sm:pt-24 sm:pb-10 px-4 sm:px-8 text-center">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-blue-400 mb-2">
+            {profileData.name}
+          </h1>
+          <p className="text-lg sm:text-xl text-slate-400 font-medium mb-6">
+            {profileData.title}
+          </p>
 
-        <div id="messageBox" class="message">
-            Добро пожаловать в Крипто Игру! Начните майнить или торговать.
+          {/* Ссылки на социальные сети */}
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
+            {profileData.socialLinks.map((link) => (
+              <button
+                key={link.name}
+                onClick={() => handleSocialClick(link.url)}
+                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
+              >
+                <link.icon size={20} />
+                <span>{link.name}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Раздел биографии */}
+          <div className="text-left bg-slate-700 p-6 sm:p-8 rounded-lg shadow-inner border border-slate-600">
+            <h2 className="text-3xl font-bold text-blue-300 mb-4 text-center">
+              Обо мне
+            </h2>
+            {profileData.bio.map((paragraph, index) => (
+              <p key={index} className="mb-4 last:mb-0 leading-relaxed text-slate-300">
+                {paragraph}
+              </p>
+            ))}
+          </div>
         </div>
+      </div>
     </div>
+  );
+};
 
-    <script type="module">
-        // Firebase initialization imports
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        // No Firestore yet, so no Firestore imports
-
-        // Firebase configuration (global variables provided by Canvas)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        let auth;
-        let firebaseUserId = ''; // Internal Firebase user ID for potential future use
-
-        // Game State
-        let cryptoPrice = 100.00; // Начальная цена криптовалюты
-        let fiatBalance = 1000.00; // Начальный баланс в USD
-        let cryptoOwned = 0.00; // Начальное количество криптовалюты
-        const mineAmount = 0.1; // Количество добываемой криптовалюты за клик
-        const priceFluctuation = 0.05; // Максимальная процентная флуктуация за интервал
-        const updateInterval = 3000; // Обновление цены каждые 3 секунды
-
-        // DOM Elements
-        const cryptoPriceEl = document.getElementById('cryptoPrice');
-        const fiatBalanceEl = document.getElementById('fiatBalance');
-        const cryptoOwnedEl = document.getElementById('cryptoOwned');
-        const mineBtn = document.getElementById('mineBtn');
-        const buyBtn = document.getElementById('buyBtn');
-        const sellBtn = document.getElementById('sellBtn');
-        const buyAmountInput = document.getElementById('buyAmount');
-        const sellAmountInput = document.getElementById('sellAmount');
-        const messageBox = document.getElementById('messageBox');
-
-
-        // Initialize game on window load
-        window.onload = async function() {
-            // Initialize Firebase App
-            const app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-
-            // Firebase Authentication: Sign in with custom token or anonymously
-            try {
-                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                firebaseUserId = auth.currentUser?.uid || 'anonymous';
-                console.log("Firebase user ID:", firebaseUserId); // Log internal Firebase ID
-            } catch (error) {
-                console.error("Ошибка аутентификации Firebase:", error);
-                showMessage("Ошибка аутентификации. Сохранение данных может быть недоступно.", "error");
-            }
-
-            showMessage("Добро пожаловать в Крипто Игру! Начните майнить или торговать.", "info");
-
-            updateUI();
-            // Start the game loop for price updates
-            setInterval(updatePrice, updateInterval);
-        };
-
-        // Update UI elements
-        function updateUI() {
-            cryptoPriceEl.textContent = `$${cryptoPrice.toFixed(2)}`;
-            fiatBalanceEl.textContent = `$${fiatBalance.toFixed(2)}`;
-            cryptoOwnedEl.textContent = `${cryptoOwned.toFixed(2)}`;
-
-            // Disable buttons if conditions are not met
-            buyBtn.disabled = fiatBalance < (parseFloat(buyAmountInput.value) * cryptoPrice);
-            sellBtn.disabled = cryptoOwned < parseFloat(sellAmountInput.value);
-            mineBtn.disabled = false; // Майнинг всегда возможен
-        }
-
-        // Display messages to the user
-        function showMessage(msg, type = 'info') {
-            messageBox.textContent = msg;
-            messageBox.className = 'message'; // Reset classes
-            if (type === 'error') {
-                messageBox.classList.add('bg-red-700', 'text-red-100');
-            } else if (type === 'success') {
-                messageBox.classList.add('bg-green-700', 'text-green-100');
-            } else {
-                messageBox.classList.add('bg-slate-700', 'text-slate-400');
-            }
-        }
-
-        // Mine cryptocurrency
-        mineBtn.addEventListener('click', () => {
-            cryptoOwned += mineAmount;
-            showMessage(`Вы добыли ${mineAmount.toFixed(1)} койнов!`, 'success');
-            updateUI();
-        });
-
-        // Buy cryptocurrency
-        buyBtn.addEventListener('click', () => {
-            const amountToBuy = parseFloat(buyAmountInput.value);
-            if (isNaN(amountToBuy) || amountToBuy <= 0) {
-                showMessage('Пожалуйста, введите действительное количество для покупки.', 'error');
-                return;
-            }
-
-            const cost = amountToBuy * cryptoPrice;
-            if (fiatBalance >= cost) {
-                fiatBalance -= cost;
-                cryptoOwned += amountToBuy;
-                showMessage(`Вы купили ${amountToBuy.toFixed(2)} койнов за $${cost.toFixed(2)}.`, 'success');
-            } else {
-                showMessage('Недостаточно денег на балансе!', 'error');
-            }
-            updateUI();
-        });
-
-        // Sell cryptocurrency
-        sellBtn.addEventListener('click', () => {
-            const amountToSell = parseFloat(sellAmountInput.value);
-            if (isNaN(amountToSell) || amountToSell <= 0) {
-                showMessage('Пожалуйста, введите действительное количество для продажи.', 'error');
-                return;
-            }
-
-            if (cryptoOwned >= amountToSell) {
-                const profit = amountToSell * cryptoPrice;
-                fiatBalance += profit;
-                cryptoOwned -= amountToSell;
-                showMessage(`Вы продали ${amountToSell.toFixed(2)} койнов за $${profit.toFixed(2)}.`, 'success');
-            } else {
-                showMessage('Недостаточно койнов для продажи!', 'error');
-            }
-            updateUI();
-        });
-
-        // Update crypto price randomly
-        function updatePrice() {
-            const fluctuation = (Math.random() * 2 - 1) * cryptoPrice * priceFluctuation; // -5% to +5%
-            cryptoPrice += fluctuation;
-            // Ensure price doesn't go below a certain threshold
-            if (cryptoPrice < 1.00) {
-                cryptoPrice = 1.00;
-            }
-            showMessage(`Цена криптовалюты изменилась на $${fluctuation.toFixed(2)}. Текущая цена: $${cryptoPrice.toFixed(2)}`, 'info');
-            updateUI();
-        }
-
-        // Ensure buy/sell input values are at least 1
-        buyAmountInput.addEventListener('change', () => {
-            if (parseFloat(buyAmountInput.value) < 1) buyAmountInput.value = 1;
-            updateUI(); // Update button state
-        });
-        sellAmountInput.addEventListener('change', () => {
-            if (parseFloat(sellAmountInput.value) < 1) sellAmountInput.value = 1;
-            updateUI(); // Update button state
-        });
-
-    </script>
-</body>
-</html>
+export default App;
