@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CryptoGame</title>
+    <title>Криптовалютная Игра</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -28,7 +28,6 @@
             max-width: 700px; /* Increased max-width */
             text-align: center;
             border: 1px solid #334155; /* Tailwind slate-700 */
-            position: relative; /* For overlay */
         }
         .btn {
             background-color: #3b82f6; /* Tailwind blue-500 */
@@ -56,7 +55,7 @@
             cursor: not-allowed;
             transform: none;
         }
-        input[type="number"], input[type="text"], select { /* Added text type for username */
+        input[type="number"], select {
             background-color: #334155; /* Tailwind slate-700 */
             border: 1px solid #475569; /* Tailwind slate-600 */
             color: #e2e8f0;
@@ -65,11 +64,6 @@
             width: 100px; /* Default width for inputs and select */
             text-align: center;
             margin-right: 0.5rem;
-        }
-        input[type="text"] {
-            width: 100%;
-            max-width: 250px;
-            text-align: left;
         }
         select {
             width: auto;
@@ -92,44 +86,269 @@
         .price-item:last-child {
             border-bottom: none;
         }
-        /* Registration Overlay */
-        .registration-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(15, 23, 42, 0.95); /* Darker slate-900 with transparency */
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 1.5rem;
-            z-index: 10;
-        }
-        .registration-box {
-            background-color: #1e293b;
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            width: 90%;
-            max-width: 400px;
-        }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3b82f6;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin-top: 1rem;
-            display: inline-block;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
+<body>
+    <div class="game-container">
+        <!-- Main Game UI -->
+        <h1 class="text-4xl font-bold mb-6 text-blue-400">Криптовалютная Игра 🚀</h1>
 
+        <div class="mb-6 space-y-3">
+            <p class="text-xl">Фиатный баланс: <span id="fiatBalance" class="font-bold text-yellow-400">$1000.00</span></p>
+            <!-- Все пользовательские ID и связанные с Firebase данные удалены -->
+        </div>
 
+        <div class="bg-slate-700 p-4 rounded-lg mb-6">
+            <h2 class="text-2xl font-semibold text-blue-300 mb-4">Цены и ваши монеты</h2>
+            <div id="cryptoBalances" class="space-y-2">
+                <!-- Балансы криптовалют будут динамически вставлены здесь -->
+            </div>
+        </div>
+
+        <div class="mb-6 flex flex-col md:flex-row items-center justify-center gap-4">
+            <label for="selectCrypto" class="text-lg font-medium">Выбрать криптовалюту:</label>
+            <select id="selectCrypto" class="rounded-md">
+                <!-- Опции будут динамически заполнены -->
+            </select>
+            <button id="mineBtn" class="btn flex-col py-3 px-6">
+                <span class="text-2xl">⛏️</span>
+                <span class="mt-1">Майнить (0.1)</span>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="flex flex-col items-center justify-center bg-slate-700 p-4 rounded-lg">
+                <p class="text-lg font-medium mb-2">Купить <span id="currentCryptoNameBuy" class="font-bold text-purple-300"></span></p>
+                <div class="flex items-center mb-2">
+                    <input type="number" id="buyAmount" value="1" min="1" class="rounded-md">
+                    <button id="buyBtn" class="btn">Купить</button>
+                </div>
+                <p class="text-sm text-slate-400">По цене: <span id="currentCryptoPriceBuy">$0.00</span></p>
+            </div>
+            <div class="flex flex-col items-center justify-center bg-slate-700 p-4 rounded-lg">
+                <p class="text-lg font-medium mb-2">Продать <span id="currentCryptoNameSell" class="font-bold text-purple-300"></span></p>
+                <div class="flex items-center mb-2">
+                    <input type="number" id="sellAmount" value="1" min="1" class="rounded-md">
+                    <button id="sellBtn" class="btn">Продать</button>
+                </div>
+                <p class="text-sm text-slate-400">По цене: <span id="currentCryptoPriceSell">$0.00</span></p>
+            </div>
+        </div>
+
+        <div id="messageBox" class="message">
+            Добро пожаловать в Крипто Игру! Выберите криптовалюту и начните майнить или торговать.
+        </div>
+    </div>
+
+    <script type="module">
+        // Все импорты Firebase удалены
+        // import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        // import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // import { getFirestore, doc, setDoc, getDoc, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Все конфигурации Firebase и App ID удалены
+        // const YOUR_FIREBASE_APP_ID = 'github-io-crypto-game';
+        // const YOUR_FIREBASE_CONFIG = { ... };
+
+        // Переменные Firebase удалены
+        // let auth;
+        // let db;
+        // let firebaseUserId = '';
+
+        // Состояние игры (сбрасывается при каждой загрузке страницы)
+        let fiatBalance = 1000.00;
+        const mineAmount = 0.1;
+        const priceFluctuationFactor = 0.05;
+        const updateInterval = 3000;
+
+        const initialCryptocurrencies = {
+            'USDT': { name: 'Tether', symbol: 'USDT', emoji: '₮', initialPrice: 1.00, holdings: 0 },
+            'TRX': { name: 'Tron', symbol: 'TRX', emoji: '⚡', initialPrice: 0.10, holdings: 0 },
+            'TON': { name: 'Toncoin', symbol: 'TON', emoji: '💎', initialPrice: 7.00, holdings: 0 },
+            'ETH': { name: 'Ethereum', symbol: 'ETH', emoji: 'Ξ', initialPrice: 2500.00, holdings: 0 },
+            'BTC': { name: 'Bitcoin', symbol: 'BTC', emoji: '₿', initialPrice: 60000.00, holdings: 0 },
+        };
+        let cryptocurrencies = JSON.parse(JSON.stringify(initialCryptocurrencies)); // Глубокая копия для состояния игры
+
+        let currentPrices = {}; // Хранит динамические цены для каждой криптовалюты
+        let selectedCryptoId = 'USDT'; // Выбранная по умолчанию криптовалюта
+
+        // DOM Elements
+        const fiatBalanceEl = document.getElementById('fiatBalance');
+        const cryptoBalancesContainer = document.getElementById('cryptoBalances');
+        const selectCryptoEl = document.getElementById('selectCrypto');
+        const mineBtn = document.getElementById('mineBtn');
+        const buyBtn = document.getElementById('buyBtn');
+        const sellBtn = document.getElementById('sellBtn');
+        const buyAmountInput = document.getElementById('buyAmount');
+        const sellAmountInput = document.getElementById('sellAmount');
+        const messageBox = document.getElementById('messageBox');
+        const currentCryptoNameBuyEl = document.getElementById('currentCryptoNameBuy');
+        const currentCryptoPriceBuyEl = document.getElementById('currentCryptoPriceBuy');
+        const currentCryptoNameSellEl = document.getElementById('currentCryptoNameSell');
+        const currentCryptoPriceSellEl = document.getElementById('currentCryptoPriceSell');
+
+        // Все функции утилиты Firebase удалены
+        // async function callFirebaseApi(...) { ... }
+
+        // --- Инициализация игры ---
+        window.onload = async function() {
+            // Инициализируем текущие цены начальными
+            for (const key in initialCryptocurrencies) {
+                currentPrices[key] = initialCryptocurrencies[key].initialPrice;
+            }
+            populateCryptoDropdown();
+            updateUI();
+            showGameMessage("Добро пожаловать в Крипто Игру! Начните майнить или торговать.", 'info');
+            // Запускаем игровой цикл для обновления цен
+            setInterval(updateAllPrices, updateInterval);
+        };
+
+        // --- Логика игры ---
+
+        // Заполняет выпадающий список криптовалют
+        function populateCryptoDropdown() {
+            for (const key in cryptocurrencies) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = `${cryptocurrencies[key].emoji} ${cryptocurrencies[key].name} (${cryptocurrencies[key].symbol})`;
+                selectCryptoEl.appendChild(option);
+            }
+        }
+
+        // Обработчик изменения выбранной криптовалюты
+        selectCryptoEl.addEventListener('change', (event) => {
+            selectedCryptoId = event.target.value;
+            updateUI();
+        });
+
+        // Обновляет элементы UI
+        function updateUI() {
+            fiatBalanceEl.textContent = `$${fiatBalance.toFixed(2)}`;
+
+            cryptoBalancesContainer.innerHTML = '';
+            for (const key in cryptocurrencies) {
+                const div = document.createElement('div');
+                div.className = 'price-item text-left';
+                const crypto = cryptocurrencies[key];
+                const currentPrice = currentPrices[key];
+                div.innerHTML = `
+                    <span class="font-bold text-lg">${crypto.emoji} ${crypto.symbol} (${crypto.name})</span>
+                    <span class="text-green-400 font-bold">$${currentPrice.toFixed(2)}</span>
+                    <span class="text-purple-400">Мои монеты: ${crypto.holdings.toFixed(2)}</span>
+                `;
+                cryptoBalancesContainer.appendChild(div);
+            }
+
+            const selectedCrypto = cryptocurrencies[selectedCryptoId];
+            const currentPrice = currentPrices[selectedCryptoId];
+
+            currentCryptoNameBuyEl.textContent = selectedCrypto.symbol;
+            currentCryptoPriceBuyEl.textContent = `$${currentPrice.toFixed(2)}`;
+            currentCryptoNameSellEl.textContent = selectedCrypto.symbol;
+            currentCryptoPriceSellEl.textContent = `$${currentPrice.toFixed(2)}`;
+
+            const amountToBuy = parseFloat(buyAmountInput.value);
+            buyBtn.disabled = fiatBalance < (amountToBuy * currentPrice);
+
+            const amountToSell = parseFloat(sellAmountInput.value);
+            sellBtn.disabled = selectedCrypto.holdings < amountToSell;
+
+            mineBtn.disabled = false;
+        }
+
+        // Отображает сообщения пользователю
+        function showGameMessage(msg, type = 'info') {
+            messageBox.textContent = msg;
+            messageBox.className = 'message';
+            if (type === 'error') {
+                messageBox.classList.add('bg-red-700', 'text-red-100');
+            } else if (type === 'success') {
+                messageBox.classList.add('bg-green-700', 'text-green-100');
+            } else {
+                messageBox.classList.add('bg-slate-700', 'text-slate-400');
+            }
+        }
+
+        // Обработчик кнопки "Майнить"
+        mineBtn.addEventListener('click', () => { // async удален
+            const selectedCrypto = cryptocurrencies[selectedCryptoId];
+            selectedCrypto.holdings += mineAmount;
+            showGameMessage(`Вы добыли ${mineAmount.toFixed(1)} ${selectedCrypto.symbol}!`, 'success');
+            updateUI();
+        });
+
+        // Обработчик кнопки "Купить"
+        buyBtn.addEventListener('click', () => { // async удален
+            const amountToBuy = parseFloat(buyAmountInput.value);
+            if (isNaN(amountToBuy) || amountToBuy <= 0) {
+                showGameMessage('Пожалуйста, введите действительное количество для покупки.', 'error');
+                return;
+            }
+
+            const selectedCrypto = cryptocurrencies[selectedCryptoId];
+            const currentPrice = currentPrices[selectedCryptoId];
+            const cost = amountToBuy * currentPrice;
+
+            if (fiatBalance >= cost) {
+                fiatBalance -= cost;
+                selectedCrypto.holdings += amountToBuy;
+                showGameMessage(`Вы купили ${amountToBuy.toFixed(2)} ${selectedCrypto.symbol} за $${cost.toFixed(2)}.`, 'success');
+                updateUI();
+            } else {
+                showGameMessage('Недостаточно денег на балансе!', 'error');
+            }
+        });
+
+        // Обработчик кнопки "Продать"
+        sellBtn.addEventListener('click', () => { // async удален
+            const amountToSell = parseFloat(sellAmountInput.value);
+            if (isNaN(amountToSell) || amountToSell <= 0) {
+                showGameMessage('Пожалуйста, введите действительное количество для продажи.', 'error');
+                return;
+            }
+
+            const selectedCrypto = cryptocurrencies[selectedCryptoId];
+            const currentPrice = currentPrices[selectedCryptoId];
+
+            if (selectedCrypto.holdings >= amountToSell) {
+                const profit = amountToSell * currentPrice;
+                fiatBalance += profit;
+                selectedCrypto.holdings -= amountToSell;
+                showGameMessage(`Вы продали ${amountToSell.toFixed(2)} ${selectedCrypto.symbol} за $${profit.toFixed(2)}.`, 'success');
+                updateUI();
+            } else {
+                showGameMessage('Недостаточно койнов для продажи!', 'error');
+            }
+        });
+
+        // Обновляет все цены криптовалют случайным образом
+        function updateAllPrices() {
+            for (const key in cryptocurrencies) {
+                let currentPrice = currentPrices[key];
+                const fluctuation = (Math.random() * 2 - 1) * currentPrice * priceFluctuationFactor;
+                currentPrice += fluctuation;
+
+                if (key === 'USDT' || key === 'TRX') {
+                    currentPrice = Math.max(currentPrice, 0.01);
+                } else {
+                    currentPrice = Math.max(currentPrice, 1.00);
+                }
+                currentPrices[key] = currentPrice;
+            }
+            showGameMessage('Цены на криптовалюты обновились!', 'info');
+            updateUI();
+        }
+
+        // Обработчики изменения значений ввода для покупки/продажи
+        buyAmountInput.addEventListener('change', () => {
+            if (parseFloat(buyAmountInput.value) < 1) buyAmountInput.value = 1;
+            updateUI();
+        });
+        sellAmountInput.addEventListener('change', () => {
+            if (parseFloat(sellAmountInput.value) < 1) sellAmountInput.value = 1;
+            updateUI();
+        });
+    </script>
+</body>
+</html>
