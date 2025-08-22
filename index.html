@@ -204,8 +204,8 @@
     <script type="module">
         // Firebase initialization imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc, collection } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
 
         // --- ВАЖНО: Замените эти значения на свою собственную конфигурацию Firebase! ---
         // 1. Создайте новый проект Firebase на console.firebase.google.com
@@ -213,12 +213,12 @@
         // 3. Включите Firestore и анонимную аутентификацию.
         const YOUR_FIREBASE_APP_ID = 'github-io-crypto-game'; // Произвольное уникальное имя для вашего приложения GitHub Pages
         const YOUR_FIREBASE_CONFIG = {
-            apiKey: "YOUR_API_KEY",             // <- Замените на ваш apiKey
-            authDomain: "YOUR_AUTH_DOMAIN",     // <- Замените на ваш authDomain
-            projectId: "YOUR_PROJECT_ID",       // <- Замените на ваш projectId
-            storageBucket: "YOUR_STORAGE_BUCKET", // <- Замените на ваш storageBucket
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // <- Замените на ваш messagingSenderId
-            appId: "YOUR_APP_ID"                // <- Замените на ваш appId
+            apiKey: "AIzaSyA8_tr8OUc0fmUSYElSGThvJJxFy9OhfG0",             // <- Замените на ваш apiKey
+            authDomain: "cryptogame-97776.firebaseapp.com",     // <- Замените на ваш authDomain
+            projectId: "cryptogame-97776",       // <- Замените на ваш projectId
+            storageBucket: "cryptogame-97776.firebasestorage.app", // <- Замените на ваш storageBucket
+            messagingSenderId: "812965852801", // <- Замените на ваш messagingSenderId
+            appId: "1:812965852801:web:af053bdcff0bf66e67ff80"                // <- Замените на ваш appId
         };
         // ---------------------------------------------------------------------------------
 
@@ -586,3 +586,4 @@
     </script>
 </body>
 </html>
+
