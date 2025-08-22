@@ -1,14 +1,245 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Catch the Apple</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Криптовалютная Игра</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Tailwind slate-900 */
+            color: #e2e8f0; /* Tailwind slate-200 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        .game-container {
+            background-color: #1e293b; /* Tailwind slate-800 */
+            border-radius: 1.5rem; /* Rounded xl */
+            padding: 2.5rem; /* p-10 */
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); /* shadow-lg */
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            border: 1px solid #334155; /* Tailwind slate-700 */
+        }
+        .btn {
+            background-color: #3b82f6; /* Tailwind blue-500 */
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem; /* Rounded lg */
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn:hover {
+            background-color: #2563eb; /* Tailwind blue-600 */
+            transform: translateY(-2px);
+        }
+        .btn:active {
+            background-color: #1d4ed8; /* Tailwind blue-700 */
+            transform: translateY(0);
+        }
+        .btn:disabled {
+            background-color: #64748b; /* Tailwind slate-500 */
+            cursor: not-allowed;
+            transform: none;
+        }
+        input[type="number"] {
+            background-color: #334155; /* Tailwind slate-700 */
+            border: 1px solid #475569; /* Tailwind slate-600 */
+            color: #e2e8f0;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem; /* Rounded md */
+            width: 80px;
+            text-align: center;
+            margin-right: 0.5rem;
+        }
+        .message {
+            margin-top: 1.5rem;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            background-color: #334155; /* Tailwind slate-700 */
+            color: #94a3b8; /* Tailwind slate-400 */
+            min-height: 2.5rem; /* To prevent CLS */
+        }
+    </style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="basket"></div>
-        <div id="score-display">Score: 0</div>
+    <div class="game-container">
+        <h1 class="text-4xl font-bold mb-6 text-blue-400">Криптовалютная Игра</h1>
+
+        <div class="mb-6 space-y-3">
+            <p class="text-xl">Текущая цена: <span id="cryptoPrice" class="font-bold text-green-400">$100.00</span></p>
+            <p class="text-xl">Баланс: <span id="fiatBalance" class="font-bold text-yellow-400">$1000.00</span></p>
+            <p class="text-xl">Мои монеты: <span id="cryptoOwned" class="font-bold text-purple-400">0.00</span></p>
+            <p class="text-sm text-slate-400 mt-2">ID пользователя: <span id="userIdDisplay">Загрузка...</span></p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <button id="mineBtn" class="btn flex-col py-3">
+                <span class="text-2xl">⛏️</span>
+                <span class="mt-1">Майнить (0.1 койнов)</span>
+            </button>
+            <div class="flex flex-col items-center justify-center">
+                <div class="flex items-center mb-2">
+                    <input type="number" id="buyAmount" value="1" min="1" class="rounded-md">
+                    <button id="buyBtn" class="btn">Купить</button>
+                </div>
+                <p class="text-sm text-slate-400">Купить койны</p>
+            </div>
+            <div class="flex flex-col items-center justify-center">
+                <div class="flex items-center mb-2">
+                    <input type="number" id="sellAmount" value="1" min="1" class="rounded-md">
+                    <button id="sellBtn" class="btn">Продать</button>
+                </div>
+                <p class="text-sm text-slate-400">Продать койны</p>
+            </div>
+        </div>
+
+        <div id="messageBox" class="message">
+            Добро пожаловать в Крипто Игру! Начните майнить или торговать.
+        </div>
     </div>
-    <script src="game.js"></script>
+
+    <script>
+        // Game State
+        let cryptoPrice = 100.00; // Initial crypto price
+        let fiatBalance = 1000.00; // Starting USD balance
+        let cryptoOwned = 0.00; // Starting crypto owned
+        const mineAmount = 0.1; // Amount of crypto mined per click
+        const priceFluctuation = 0.05; // Max percentage fluctuation per interval
+        const updateInterval = 3000; // Update price every 3 seconds
+        let userId = ''; // User ID placeholder
+
+        // DOM Elements
+        const cryptoPriceEl = document.getElementById('cryptoPrice');
+        const fiatBalanceEl = document.getElementById('fiatBalance');
+        const cryptoOwnedEl = document.getElementById('cryptoOwned');
+        const mineBtn = document.getElementById('mineBtn');
+        const buyBtn = document.getElementById('buyBtn');
+        const sellBtn = document.getElementById('sellBtn');
+        const buyAmountInput = document.getElementById('buyAmount');
+        const sellAmountInput = document.getElementById('sellAmount');
+        const messageBox = document.getElementById('messageBox');
+        const userIdDisplay = document.getElementById('userIdDisplay');
+
+        // Function to generate a simple unique ID (for demonstration)
+        function generateUserId() {
+            return 'user-' + Math.random().toString(36).substring(2, 11);
+        }
+
+        // Initialize game on window load
+        window.onload = function() {
+            userId = generateUserId();
+            userIdDisplay.textContent = userId;
+            updateUI();
+            // Start the game loop for price updates
+            setInterval(updatePrice, updateInterval);
+        };
+
+        // Update UI elements
+        function updateUI() {
+            cryptoPriceEl.textContent = `$${cryptoPrice.toFixed(2)}`;
+            fiatBalanceEl.textContent = `$${fiatBalance.toFixed(2)}`;
+            cryptoOwnedEl.textContent = `${cryptoOwned.toFixed(2)}`;
+
+            // Disable buttons if conditions are not met
+            buyBtn.disabled = fiatBalance < (buyAmountInput.value * cryptoPrice);
+            sellBtn.disabled = cryptoOwned < sellAmountInput.value;
+            mineBtn.disabled = false; // Mining is always possible
+        }
+
+        // Display messages to the user
+        function showMessage(msg, type = 'info') {
+            messageBox.textContent = msg;
+            messageBox.className = 'message'; // Reset classes
+            if (type === 'error') {
+                messageBox.classList.add('bg-red-700', 'text-red-100');
+            } else if (type === 'success') {
+                messageBox.classList.add('bg-green-700', 'text-green-100');
+            } else {
+                messageBox.classList.add('bg-slate-700', 'text-slate-400');
+            }
+        }
+
+        // Mine cryptocurrency
+        mineBtn.addEventListener('click', () => {
+            cryptoOwned += mineAmount;
+            showMessage(`Вы добыли ${mineAmount.toFixed(1)} койнов!`, 'success');
+            updateUI();
+        });
+
+        // Buy cryptocurrency
+        buyBtn.addEventListener('click', () => {
+            const amountToBuy = parseFloat(buyAmountInput.value);
+            if (isNaN(amountToBuy) || amountToBuy <= 0) {
+                showMessage('Пожалуйста, введите действительное количество для покупки.', 'error');
+                return;
+            }
+
+            const cost = amountToBuy * cryptoPrice;
+            if (fiatBalance >= cost) {
+                fiatBalance -= cost;
+                cryptoOwned += amountToBuy;
+                showMessage(`Вы купили ${amountToBuy.toFixed(2)} койнов за $${cost.toFixed(2)}.`, 'success');
+            } else {
+                showMessage('Недостаточно денег на балансе!', 'error');
+            }
+            updateUI();
+        });
+
+        // Sell cryptocurrency
+        sellBtn.addEventListener('click', () => {
+            const amountToSell = parseFloat(sellAmountInput.value);
+            if (isNaN(amountToSell) || amountToSell <= 0) {
+                showMessage('Пожалуйста, введите действительное количество для продажи.', 'error');
+                return;
+            }
+
+            if (cryptoOwned >= amountToSell) {
+                const profit = amountToSell * cryptoPrice;
+                fiatBalance += profit;
+                cryptoOwned -= amountToSell;
+                showMessage(`Вы продали ${amountToSell.toFixed(2)} койнов за $${profit.toFixed(2)}.`, 'success');
+            } else {
+                showMessage('Недостаточно койнов для продажи!', 'error');
+            }
+            updateUI();
+        });
+
+        // Update crypto price randomly
+        function updatePrice() {
+            const fluctuation = (Math.random() * 2 - 1) * cryptoPrice * priceFluctuation; // -5% to +5%
+            cryptoPrice += fluctuation;
+            // Ensure price doesn't go below a certain threshold
+            if (cryptoPrice < 1.00) {
+                cryptoPrice = 1.00;
+            }
+            showMessage(`Цена криптовалюты изменилась на $${fluctuation.toFixed(2)}. Текущая цена: $${cryptoPrice.toFixed(2)}`, 'info');
+            updateUI();
+        }
+
+        // Ensure buy/sell input values are at least 1
+        buyAmountInput.addEventListener('change', () => {
+            if (buyAmountInput.value < 1) buyAmountInput.value = 1;
+            updateUI(); // Update button state
+        });
+        sellAmountInput.addEventListener('change', () => {
+            if (sellAmountInput.value < 1) sellAmountInput.value = 1;
+            updateUI(); // Update button state
+        });
+
+    </script>
 </body>
 </html>
