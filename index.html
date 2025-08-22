@@ -205,7 +205,7 @@
         // Firebase initialization imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Firebase configuration (global variables provided by Canvas)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
@@ -259,8 +259,9 @@
         const currentCryptoPriceSellEl = document.getElementById('currentCryptoPriceSell');
 
         // --- Firebase Firestore Paths ---
-        const USERNAME_COLLECTION = `artifacts/${appId}/public/usernames`; // Public collection for username-UID mapping
-        const USER_GAMEDATA_DOC = (uid) => `artifacts/${appId}/users/${uid}/gameData/state`; // Private user game data
+        // Изменено: Убедимся, что путь к коллекции соответствует правилам Firestore (нечетное количество сегментов для коллекции)
+        const USERNAME_COLLECTION_PATH = `artifacts/${appId}/public/data/usernames`; // Публичная коллекция для сопоставления имени пользователя с UID
+        const USER_GAMEDATA_DOC = (uid) => `artifacts/${appId}/users/${uid}/gameData/state`; // Приватные данные игры пользователя
 
         // --- Utility Functions for Firebase API Calls with Exponential Backoff ---
         async function callFirebaseApi(apiCall, maxRetries = 5, delay = 1000) {
@@ -334,8 +335,9 @@
             showRegistrationMessage('Загрузка...', 'info');
 
             try {
-                // 1. Check if username is taken by another Firebase user
-                const usernameDocRef = doc(db, USERNAME_COLLECTION, username);
+                // Изменено: Используем collection() для получения ссылки на коллекцию, а затем doc() для ссылки на документ
+                const usernamesCollectionRef = collection(db, USERNAME_COLLECTION_PATH);
+                const usernameDocRef = doc(usernamesCollectionRef, username);
                 const usernameDocSnap = await callFirebaseApi(() => getDoc(usernameDocRef));
 
                 if (usernameDocSnap.exists()) {
