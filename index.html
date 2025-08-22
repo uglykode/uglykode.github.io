@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Криптовалютная Игра</title>
+    <title>Криптовалютная Игра от Кода!</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -83,7 +83,6 @@
             <p class="text-xl">Текущая цена: <span id="cryptoPrice" class="font-bold text-green-400">$100.00</span></p>
             <p class="text-xl">Баланс: <span id="fiatBalance" class="font-bold text-yellow-400">$1000.00</span></p>
             <p class="text-xl">Мои монеты: <span id="cryptoOwned" class="font-bold text-purple-400">0.00</span></p>
-            <p class="text-sm text-slate-400 mt-2">ID пользователя: <span id="userIdDisplay">Загрузка...</span></p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
@@ -112,15 +111,25 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        // Firebase initialization imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // No Firestore yet, so no Firestore imports
+
+        // Firebase configuration (global variables provided by Canvas)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        let auth;
+        let firebaseUserId = ''; // Internal Firebase user ID for potential future use
+
         // Game State
-        let cryptoPrice = 100.00; // Initial crypto price
-        let fiatBalance = 1000.00; // Starting USD balance
-        let cryptoOwned = 0.00; // Starting crypto owned
-        const mineAmount = 0.1; // Amount of crypto mined per click
-        const priceFluctuation = 0.05; // Max percentage fluctuation per interval
-        const updateInterval = 3000; // Update price every 3 seconds
-        let userId = ''; // User ID placeholder
+        let cryptoPrice = 100.00; // Начальная цена криптовалюты
+        let fiatBalance = 1000.00; // Начальный баланс в USD
+        let cryptoOwned = 0.00; // Начальное количество криптовалюты
+        const mineAmount = 0.1; // Количество добываемой криптовалюты за клик
+        const priceFluctuation = 0.05; // Максимальная процентная флуктуация за интервал
+        const updateInterval = 3000; // Обновление цены каждые 3 секунды
 
         // DOM Elements
         const cryptoPriceEl = document.getElementById('cryptoPrice');
@@ -132,17 +141,31 @@
         const buyAmountInput = document.getElementById('buyAmount');
         const sellAmountInput = document.getElementById('sellAmount');
         const messageBox = document.getElementById('messageBox');
-        const userIdDisplay = document.getElementById('userIdDisplay');
 
-        // Function to generate a simple unique ID (for demonstration)
-        function generateUserId() {
-            return 'user-' + Math.random().toString(36).substring(2, 11);
-        }
 
         // Initialize game on window load
-        window.onload = function() {
-            userId = generateUserId();
-            userIdDisplay.textContent = userId;
+        window.onload = async function() {
+            // Initialize Firebase App
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+
+            // Firebase Authentication: Sign in with custom token or anonymously
+            try {
+                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                firebaseUserId = auth.currentUser?.uid || 'anonymous';
+                console.log("Firebase user ID:", firebaseUserId); // Log internal Firebase ID
+            } catch (error) {
+                console.error("Ошибка аутентификации Firebase:", error);
+                showMessage("Ошибка аутентификации. Сохранение данных может быть недоступно.", "error");
+            }
+
+            showMessage("Добро пожаловать в Крипто Игру! Начните майнить или торговать.", "info");
+
             updateUI();
             // Start the game loop for price updates
             setInterval(updatePrice, updateInterval);
@@ -155,9 +178,9 @@
             cryptoOwnedEl.textContent = `${cryptoOwned.toFixed(2)}`;
 
             // Disable buttons if conditions are not met
-            buyBtn.disabled = fiatBalance < (buyAmountInput.value * cryptoPrice);
-            sellBtn.disabled = cryptoOwned < sellAmountInput.value;
-            mineBtn.disabled = false; // Mining is always possible
+            buyBtn.disabled = fiatBalance < (parseFloat(buyAmountInput.value) * cryptoPrice);
+            sellBtn.disabled = cryptoOwned < parseFloat(sellAmountInput.value);
+            mineBtn.disabled = false; // Майнинг всегда возможен
         }
 
         // Display messages to the user
@@ -232,11 +255,11 @@
 
         // Ensure buy/sell input values are at least 1
         buyAmountInput.addEventListener('change', () => {
-            if (buyAmountInput.value < 1) buyAmountInput.value = 1;
+            if (parseFloat(buyAmountInput.value) < 1) buyAmountInput.value = 1;
             updateUI(); // Update button state
         });
         sellAmountInput.addEventListener('change', () => {
-            if (sellAmountInput.value < 1) sellAmountInput.value = 1;
+            if (parseFloat(sellAmountInput.value) < 1) sellAmountInput.value = 1;
             updateUI(); // Update button state
         });
 
