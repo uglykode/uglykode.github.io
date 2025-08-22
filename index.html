@@ -3,271 +3,371 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Моя Биография</title>
-    <!-- Tailwind CSS CDN -->
+    <title>CryptoGame</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Inter for modern look -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Font Awesome for social media icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
             background-color: #0f172a; /* Tailwind slate-900 */
             color: #e2e8f0; /* Tailwind slate-200 */
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Align items to the top for better content display */
+            align-items: center;
             min-height: 100vh;
+            margin: 0;
             padding: 1rem;
             box-sizing: border-box;
         }
-        .container {
-            width: 100%;
-            max-width: 900px; /* Increased max-width for better display */
+        .game-container {
             background-color: #1e293b; /* Tailwind slate-800 */
             border-radius: 1.5rem; /* Rounded xl */
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); /* shadow-xl */
+            padding: 2.5rem; /* p-10 */
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); /* shadow-lg */
+            width: 100%;
+            max-width: 700px; /* Increased max-width */
+            text-align: center;
             border: 1px solid #334155; /* Tailwind slate-700 */
-            overflow: hidden;
-            margin-top: 2rem; /* Add some margin from the top */
-            margin-bottom: 2rem; /* Add some margin at the bottom */
         }
-        .profile-banner {
-            position: relative;
-            height: 192px; /* h-48 */
-            background-color: #334155; /* Fallback background */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .profile-banner img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .avatar-container {
-            position: absolute;
-            bottom: -64px; /* -bottom-16 */
-            left: 50%;
-            transform: translateX(-50%);
-            width: 128px; /* w-32 */
-            height: 128px; /* h-32 */
-            border-radius: 9999px; /* rounded-full */
-            border: 4px solid #1e293b; /* border-slate-800 */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-lg */
-            transition: transform 0.3s ease;
-        }
-        .avatar-container:hover {
-            transform: translateX(-50%) scale(1.05);
-        }
-        .avatar-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 9999px;
-        }
-        .profile-info {
-            padding-top: 100px; /* pt-20 to clear avatar */
-            padding-bottom: 2rem; /* pb-8 */
-            padding-left: 1rem; /* px-4 */
-            padding-right: 1rem; /* px-4 */
-            text-align: center;
-        }
-        .profile-name {
-            font-size: 2.25rem; /* text-4xl */
-            font-weight: 800; /* font-extrabold */
-            color: #60a5fa; /* text-blue-400 */
-            margin-bottom: 0.5rem; /* mb-2 */
-        }
-        .profile-title {
-            font-size: 1.125rem; /* text-lg */
-            color: #94a3b8; /* text-slate-400 */
-            font-weight: 500; /* font-medium */
-            margin-bottom: 1.5rem; /* mb-6 */
-        }
-        .social-links {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1rem; /* gap-4 */
-            margin-bottom: 2rem; /* mb-8 */
-        }
-        .social-button {
-            display: flex;
-            align-items: center;
-            justify-content: center; /* Center content in button */
-            gap: 0.5rem; /* space-x-2 */
-            background-color: #3b82f6; /* bg-blue-600 */
+        .btn {
+            background-color: #3b82f6; /* Tailwind blue-500 */
             color: white;
-            font-weight: 600; /* font-semibold */
-            padding: 0.75rem 1rem; /* py-2 px-4 */
-            border-radius: 0.5rem; /* rounded-lg */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
-            transition: all 0.3s ease;
-            transform: translateY(0);
-            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem; /* Rounded lg */
+            font-weight: 600;
             cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
-        .social-button:hover {
-            background-color: #2563eb; /* hover:bg-blue-700 */
-            transform: translateY(-4px) scale(1.05); /* hover:-translate-y-1 hover:scale-105 */
+        .btn:hover {
+            background-color: #2563eb; /* Tailwind blue-600 */
+            transform: translateY(-2px);
         }
-        .social-button:focus {
-            outline: none;
-            ring: 2px solid #60a5fa; /* focus:ring-2 focus:ring-blue-500 */
-            ring-opacity: 0.75; /* focus:ring-opacity-75 */
+        .btn:active {
+            background-color: #1d4ed8; /* Tailwind blue-700 */
+            transform: translateY(0);
         }
-        .bio-section {
-            text-align: left;
-            background-color: #334155; /* bg-slate-700 */
-            padding: 1.5rem; /* p-6 */
-            border-radius: 0.5rem; /* rounded-lg */
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-inner */
-            border: 1px solid #475569; /* border-slate-600 */
-            margin-left: 1rem;
-            margin-right: 1rem;
+        .btn:disabled {
+            background-color: #64748b; /* Tailwind slate-500 */
+            cursor: not-allowed;
+            transform: none;
         }
-        .bio-section h2 {
-            font-size: 1.875rem; /* text-3xl */
-            font-weight: 700; /* font-bold */
-            color: #93c5fd; /* text-blue-300 */
-            margin-bottom: 1rem; /* mb-4 */
+        input[type="number"], select {
+            background-color: #334155; /* Tailwind slate-700 */
+            border: 1px solid #475569; /* Tailwind slate-600 */
+            color: #e2e8f0;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem; /* Rounded md */
+            width: 100px; /* Default width for inputs and select */
             text-align: center;
+            margin-right: 0.5rem;
         }
-        .bio-section p {
-            margin-bottom: 1rem; /* mb-4 */
-            line-height: 1.625; /* leading-relaxed */
-            color: #cbd5e1; /* text-slate-300 */
+        select {
+            width: auto;
+            min-width: 120px;
         }
-        .bio-section p:last-child {
-            margin-bottom: 0;
+        .message {
+            margin-top: 1.5rem;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            background-color: #334155; /* Tailwind slate-700 */
+            color: #94a3b8; /* Tailwind slate-400 */
+            min-height: 2.5rem; /* To prevent CLS */
         }
-
-        /* Responsive adjustments */
-        @media (min-width: 640px) { /* sm breakpoint */
-            .profile-banner {
-                height: 256px; /* sm:h-64 */
-            }
-            .avatar-container {
-                bottom: -80px; /* sm:-bottom-20 */
-                width: 160px; /* sm:w-40 */
-                height: 160px; /* sm:h-40 */
-            }
-            .profile-info {
-                padding-top: 100px; /* sm:pt-24 */
-                padding-bottom: 2.5rem; /* sm:pb-10 */
-                padding-left: 2rem; /* sm:px-8 */
-                padding-right: 2rem; /* sm:px-8 */
-            }
-            .profile-name {
-                font-size: 3rem; /* sm:text-5xl */
-            }
-            .profile-title {
-                font-size: 1.25rem; /* sm:text-xl */
-            }
-            .bio-section {
-                padding: 2rem; /* sm:p-8 */
-                margin-left: 2rem;
-                margin-right: 2rem;
-            }
+        .price-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #334155;
+        }
+        .price-item:last-child {
+            border-bottom: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Profile Banner -->
-        <div class="profile-banner">
-            <img id="bannerImage" src="https://placehold.co/1200x300/1e293b/94a3b8?text=ФОН ПРОФИЛЯ" alt="Баннер профиля">
-            <!-- Profile Avatar -->
-            <div class="avatar-container">
-                <img id="avatarImage" src="https://ru.pinterest.com/pin/70298444179590322/" alt="Аватар профиля">
+    <div class="game-container">
+        <h1 class="text-4xl font-bold mb-6 text-blue-400">Криптовалютная Игра 🚀</h1>
+
+        <div class="mb-6 space-y-3">
+            <p class="text-xl">Фиатный баланс: <span id="fiatBalance" class="font-bold text-yellow-400">$1000.00</span></p>
+            <p class="text-sm text-slate-400 mt-2">ID пользователя: <span id="firebaseUserIdDisplay">Загрузка...</span></p>
+        </div>
+
+        <div class="bg-slate-700 p-4 rounded-lg mb-6">
+            <h2 class="text-2xl font-semibold text-blue-300 mb-4">Цены и ваши монеты</h2>
+            <div id="cryptoBalances" class="space-y-2">
+                <!-- Crypto balances will be dynamically inserted here -->
             </div>
         </div>
 
-        <!-- Profile Information -->
-        <div class="profile-info">
-            <h1 id="profileName" class="profile-name">Kode</h1>
-            <p id="profileTitle" class="profile-title">Ебанутый Психолог</p>
+        <div class="mb-6 flex flex-col md:flex-row items-center justify-center gap-4">
+            <label for="selectCrypto" class="text-lg font-medium">Выбрать криптовалюту:</label>
+            <select id="selectCrypto" class="rounded-md">
+                <!-- Options will be dynamically populated -->
+            </select>
+            <button id="mineBtn" class="btn flex-col py-3 px-6">
+                <span class="text-2xl">⛏️</span>
+                <span class="mt-1">Майнить (0.1)</span>
+            </button>
+        </div>
 
-            <!-- Social Links -->
-            <div id="socialLinks" class="social-links">
-                <!-- Social buttons will be injected here by JavaScript -->
-            </div>
 
-            <!-- Bio Section -->
-            <div class="bio-section">
-                <h2 class="text-3xl font-bold text-blue-300 mb-4 text-center">Обо мне</h2>
-                <div id="bioText">
-                    <!-- Bio paragraphs will be injected here by JavaScript -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div class="flex flex-col items-center justify-center bg-slate-700 p-4 rounded-lg">
+                <p class="text-lg font-medium mb-2">Купить <span id="currentCryptoNameBuy" class="font-bold text-purple-300"></span></p>
+                <div class="flex items-center mb-2">
+                    <input type="number" id="buyAmount" value="1" min="1" class="rounded-md">
+                    <button id="buyBtn" class="btn">Купить</button>
                 </div>
+                <p class="text-sm text-slate-400">По цене: <span id="currentCryptoPriceBuy">$0.00</span></p>
             </div>
+            <div class="flex flex-col items-center justify-center bg-slate-700 p-4 rounded-lg">
+                <p class="text-lg font-medium mb-2">Продать <span id="currentCryptoNameSell" class="font-bold text-purple-300"></span></p>
+                <div class="flex items-center mb-2">
+                    <input type="number" id="sellAmount" value="1" min="1" class="rounded-md">
+                    <button id="sellBtn" class="btn">Продать</button>
+                </div>
+                <p class="text-sm text-slate-400">По цене: <span id="currentCryptoPriceSell">$0.00</span></p>
+            </div>
+        </div>
+
+        <div id="messageBox" class="message">
+            Добро пожаловать в Крипто Игру! Выберите криптовалюту и начните майнить или торговать.
         </div>
     </div>
 
-    <script>
-        const profileData = {
-            name: 'Код',
-            title: 'Психолог',
-            bio: [
-                'Привет! я новенький.'
-            ],
-            bannerUrl: 'https://placehold.co/1200x300/1e293b/94a3b8?text=ФОН ПРОФИЛЯ',
-            avatarUrl: 'https://placehold.co/150x150/60a5fa/ffffff?text=KODE',
-            socialLinks: [
-                { name: 'GitHub', iconClass: 'fab fa-github', url: 'https://github.com/uglykode' },
-                { name: 'Telegram', iconClass: 'fab fa-telegram-plane', url: 'https://t.me/KodePage' },
-                { name: 'TikTok', iconClass: 'fab fa-tiktok', url: 'https://tiktok.com/@5thkode' },
-                { name: 'Guns.lol', iconClass: 'fas fa-globe', url: 'https://guns.lol/kode' },
-            ],
+    <script type="module">
+        // Firebase initialization imports
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // No Firestore yet, so no Firestore imports
+
+        // Firebase configuration (global variables provided by Canvas)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        let auth;
+        let firebaseUserId = ''; // Internal Firebase user ID for potential future use
+
+        // Game State
+        let fiatBalance = 1000.00; // Starting USD balance
+        const mineAmount = 0.1; // Amount of crypto mined per click
+        const priceFluctuationFactor = 0.05; // Max percentage fluctuation per interval
+        const updateInterval = 3000; // Update price every 3 seconds
+
+        // Define cryptocurrencies with initial prices and holdings
+        const cryptocurrencies = {
+            'USDT': { name: 'Tether', symbol: 'USDT', emoji: '💲', initialPrice: 1.00, holdings: 0 },
+            'TRX': { name: 'Tron', symbol: 'TRX', emoji: '⚡', initialPrice: 0.10, holdings: 0 },
+            'TON': { name: 'TON Coin', symbol: 'TON', emoji: '💎', initialPrice: 7.00, holdings: 0 },
+            'ETH': { name: 'Ethereum', symbol: 'ETH', emoji: '🌐', initialPrice: 2500.00, holdings: 0 },
+            'BTC': { name: 'Bitcoin', symbol: 'BTC', emoji: '�', initialPrice: 60000.00, holdings: 0 },
         };
 
-        document.addEventListener('DOMContentLoaded', () => {
-            // Update profile information
-            document.getElementById('profileName').textContent = profileData.name;
-            document.getElementById('profileTitle').textContent = profileData.title;
+        let currentPrices = {}; // Stores dynamic prices for each crypto
+        let selectedCryptoId = 'USDT'; // Default selected crypto
 
-            // Update banner and avatar images
-            const bannerImage = document.getElementById('bannerImage');
-            bannerImage.src = profileData.bannerUrl;
-            bannerImage.onerror = () => { bannerImage.src = 'https://placehold.co/1200x300/1e293b/94a3b8?text=ФОН ПРОФИЛЯ'; };
+        // DOM Elements
+        const fiatBalanceEl = document.getElementById('fiatBalance');
+        const firebaseUserIdDisplay = document.getElementById('firebaseUserIdDisplay');
+        const cryptoBalancesContainer = document.getElementById('cryptoBalances');
+        const selectCryptoEl = document.getElementById('selectCrypto');
+        const mineBtn = document.getElementById('mineBtn');
+        const buyBtn = document.getElementById('buyBtn');
+        const sellBtn = document.getElementById('sellBtn');
+        const buyAmountInput = document.getElementById('buyAmount');
+        const sellAmountInput = document.getElementById('sellAmount');
+        const messageBox = document.getElementById('messageBox');
+        const currentCryptoNameBuyEl = document.getElementById('currentCryptoNameBuy');
+        const currentCryptoPriceBuyEl = document.getElementById('currentCryptoPriceBuy');
+        const currentCryptoNameSellEl = document.getElementById('currentCryptoNameSell');
+        const currentCryptoPriceSellEl = document.getElementById('currentCryptoPriceSell');
 
-            const avatarImage = document.getElementById('avatarImage');
-            avatarImage.src = profileData.avatarUrl;
-            avatarImage.onerror = () => { avatarImage.src = 'https://placehold.co/150x150/60a5fa/ffffff?text=АВАТАР'; };
+        // Initialize game on window load
+        window.onload = async function() {
+            // Initialize Firebase App
+            const app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
 
-            // Populate bio text
-            const bioTextContainer = document.getElementById('bioText');
-            profileData.bio.forEach(paragraphText => {
-                const p = document.createElement('p');
-                p.textContent = paragraphText;
-                bioTextContainer.appendChild(p);
-            });
+            // Firebase Authentication: Sign in with custom token or anonymously
+            try {
+                const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                firebaseUserId = auth.currentUser?.uid || 'anonymous';
+                firebaseUserIdDisplay.textContent = firebaseUserId;
+                console.log("Firebase user ID:", firebaseUserId); // Log internal Firebase ID
+            } catch (error) {
+                console.error("Ошибка аутентификации Firebase:", error);
+                showMessage("Ошибка аутентификации. Сохранение данных может быть недоступно.", "error");
+            }
 
-            // Populate social links
-            const socialLinksContainer = document.getElementById('socialLinks');
-            profileData.socialLinks.forEach(link => {
-                const button = document.createElement('button');
-                button.className = 'social-button';
-                button.onclick = () => window.open(link.url, '_blank');
+            // Initialize current prices with initial prices
+            for (const key in cryptocurrencies) {
+                currentPrices[key] = cryptocurrencies[key].initialPrice;
+            }
 
-                const icon = document.createElement('i');
-                icon.className = link.iconClass;
-                icon.style.fontSize = '20px'; // Equivalent to Lucide's default size
+            populateCryptoDropdown();
+            selectCryptoEl.value = selectedCryptoId; // Set default selected option
+            updateUI();
+            // Start the game loop for price updates
+            setInterval(updateAllPrices, updateInterval);
+        };
 
-                const span = document.createElement('span');
-                span.textContent = link.name;
+        // Populate the cryptocurrency selection dropdown
+        function populateCryptoDropdown() {
+            for (const key in cryptocurrencies) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = `${cryptocurrencies[key].emoji} ${cryptocurrencies[key].name} (${cryptocurrencies[key].symbol})`;
+                selectCryptoEl.appendChild(option);
+            }
+        }
 
-                button.appendChild(icon);
-                button.appendChild(span);
-                socialLinksContainer.appendChild(button);
-            });
+        // Event listener for crypto selection change
+        selectCryptoEl.addEventListener('change', (event) => {
+            selectedCryptoId = event.target.value;
+            updateUI(); // Update UI to reflect selected crypto
+        });
+
+        // Update UI elements
+        function updateUI() {
+            fiatBalanceEl.textContent = `$${fiatBalance.toFixed(2)}`;
+
+            // Update crypto balances display
+            cryptoBalancesContainer.innerHTML = '';
+            for (const key in cryptocurrencies) {
+                const div = document.createElement('div');
+                div.className = 'price-item text-left';
+                const crypto = cryptocurrencies[key];
+                const currentPrice = currentPrices[key];
+                div.innerHTML = `
+                    <span class="font-bold text-lg">${crypto.emoji} ${crypto.symbol} (${crypto.name})</span>
+                    <span class="text-green-400 font-bold">$${currentPrice.toFixed(2)}</span>
+                    <span class="text-purple-400">Мои монеты: ${crypto.holdings.toFixed(2)}</span>
+                `;
+                cryptoBalancesContainer.appendChild(div);
+            }
+
+            const selectedCrypto = cryptocurrencies[selectedCryptoId];
+            const currentPrice = currentPrices[selectedCryptoId];
+
+            // Update buy/sell sections for the selected crypto
+            currentCryptoNameBuyEl.textContent = selectedCrypto.symbol;
+            currentCryptoPriceBuyEl.textContent = `$${currentPrice.toFixed(2)}`;
+            currentCryptoNameSellEl.textContent = selectedCrypto.symbol;
+            currentCryptoPriceSellEl.textContent = `$${currentPrice.toFixed(2)}`;
+
+            // Disable buttons if conditions are not met
+            const amountToBuy = parseFloat(buyAmountInput.value);
+            buyBtn.disabled = fiatBalance < (amountToBuy * currentPrice);
+
+            const amountToSell = parseFloat(sellAmountInput.value);
+            sellBtn.disabled = selectedCrypto.holdings < amountToSell;
+
+            mineBtn.disabled = false; // Mining is always possible
+        }
+
+        // Display messages to the user
+        function showMessage(msg, type = 'info') {
+            messageBox.textContent = msg;
+            messageBox.className = 'message'; // Reset classes
+            if (type === 'error') {
+                messageBox.classList.add('bg-red-700', 'text-red-100');
+            } else if (type === 'success') {
+                messageBox.classList.add('bg-green-700', 'text-green-100');
+            } else {
+                messageBox.classList.add('bg-slate-700', 'text-slate-400');
+            }
+        }
+
+        // Mine cryptocurrency
+        mineBtn.addEventListener('click', () => {
+            const selectedCrypto = cryptocurrencies[selectedCryptoId];
+            selectedCrypto.holdings += mineAmount;
+            showMessage(`Вы добыли ${mineAmount.toFixed(1)} ${selectedCrypto.symbol}!`, 'success');
+            updateUI();
+        });
+
+        // Buy cryptocurrency
+        buyBtn.addEventListener('click', () => {
+            const amountToBuy = parseFloat(buyAmountInput.value);
+            if (isNaN(amountToBuy) || amountToBuy <= 0) {
+                showMessage('Пожалуйста, введите действительное количество для покупки.', 'error');
+                return;
+            }
+
+            const selectedCrypto = cryptocurrencies[selectedCryptoId];
+            const currentPrice = currentPrices[selectedCryptoId];
+            const cost = amountToBuy * currentPrice;
+
+            if (fiatBalance >= cost) {
+                fiatBalance -= cost;
+                selectedCrypto.holdings += amountToBuy;
+                showMessage(`Вы купили ${amountToBuy.toFixed(2)} ${selectedCrypto.symbol} за $${cost.toFixed(2)}.`, 'success');
+            } else {
+                showMessage('Недостаточно денег на балансе!', 'error');
+            }
+            updateUI();
+        });
+
+        // Sell cryptocurrency
+        sellBtn.addEventListener('click', () => {
+            const amountToSell = parseFloat(sellAmountInput.value);
+            if (isNaN(amountToSell) || amountToSell <= 0) {
+                showMessage('Пожалуйста, введите действительное количество для продажи.', 'error');
+                return;
+            }
+
+            const selectedCrypto = cryptocurrencies[selectedCryptoId];
+            const currentPrice = currentPrices[selectedCryptoId];
+
+            if (selectedCrypto.holdings >= amountToSell) {
+                const profit = amountToSell * currentPrice;
+                fiatBalance += profit;
+                selectedCrypto.holdings -= amountToSell;
+                showMessage(`Вы продали ${amountToSell.toFixed(2)} ${selectedCrypto.symbol} за $${profit.toFixed(2)}.`, 'success');
+            } else {
+                showMessage('Недостаточно койнов для продажи!', 'error');
+            }
+            updateUI();
+        });
+
+        // Update all crypto prices randomly
+        function updateAllPrices() {
+            for (const key in cryptocurrencies) {
+                let currentPrice = currentPrices[key];
+                const fluctuation = (Math.random() * 2 - 1) * currentPrice * priceFluctuationFactor; // -5% to +5%
+                currentPrice += fluctuation;
+
+                // Ensure price doesn't go below a certain threshold (e.g., 0.01 for low-value coins, 1.00 for stablecoins)
+                if (key === 'USDT' || key === 'TRX') { // Keep USDT close to 1
+                    currentPrice = Math.max(currentPrice, 0.01);
+                } else {
+                    currentPrice = Math.max(currentPrice, 1.00);
+                }
+                currentPrices[key] = currentPrice;
+            }
+            showMessage('Цены на криптовалюты обновились!', 'info');
+            updateUI();
+        }
+
+        // Ensure buy/sell input values are at least 1
+        buyAmountInput.addEventListener('change', () => {
+            if (parseFloat(buyAmountInput.value) < 1) buyAmountInput.value = 1;
+            updateUI(); // Update button state
+        });
+        sellAmountInput.addEventListener('change', () => {
+            if (parseFloat(sellAmountInput.value) < 1) sellAmountInput.value = 1;
+            updateUI(); // Update button state
         });
     </script>
 </body>
 </html>
-
-
-
+�
