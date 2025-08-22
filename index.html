@@ -204,12 +204,24 @@
     <script type="module">
         // Firebase initialization imports
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase configuration (global variables provided by Canvas)
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        // --- ВАЖНО: Замените эти значения на свою собственную конфигурацию Firebase! ---
+        // 1. Создайте новый проект Firebase на console.firebase.google.com
+        // 2. Добавьте веб-приложение в свой проект и скопируйте объект конфигурации.
+        // 3. Включите Firestore и анонимную аутентификацию.
+        const YOUR_FIREBASE_APP_ID = 'github-io-crypto-game'; // Произвольное уникальное имя для вашего приложения GitHub Pages
+        const YOUR_FIREBASE_CONFIG = {
+            apiKey: "YOUR_API_KEY",             // <- Замените на ваш apiKey
+            authDomain: "YOUR_AUTH_DOMAIN",     // <- Замените на ваш authDomain
+            projectId: "YOUR_PROJECT_ID",       // <- Замените на ваш projectId
+            storageBucket: "YOUR_STORAGE_BUCKET", // <- Замените на ваш storageBucket
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // <- Замените на ваш messagingSenderId
+            appId: "YOUR_APP_ID"                // <- Замените на ваш appId
+        };
+        // ---------------------------------------------------------------------------------
+
         let auth;
         let db;
         let firebaseUserId = ''; // Internal Firebase user ID for potential future use
@@ -259,9 +271,9 @@
         const currentCryptoPriceSellEl = document.getElementById('currentCryptoPriceSell');
 
         // --- Firebase Firestore Paths ---
-        // Изменено: Убедимся, что путь к коллекции соответствует правилам Firestore (нечетное количество сегментов для коллекции)
-        const USERNAME_COLLECTION_PATH = `artifacts/${appId}/public/data/usernames`; // Публичная коллекция для сопоставления имени пользователя с UID
-        const USER_GAMEDATA_DOC = (uid) => `artifacts/${appId}/users/${uid}/gameData/state`; // Приватные данные игры пользователя
+        // Обновлено: Используем YOUR_FIREBASE_APP_ID для путей Firestore
+        const USERNAME_COLLECTION_PATH = `artifacts/${YOUR_FIREBASE_APP_ID}/public/data/usernames`; // Публичная коллекция для сопоставления имени пользователя с UID
+        const USER_GAMEDATA_DOC = (uid) => `artifacts/${YOUR_FIREBASE_APP_ID}/users/${uid}/gameData/state`; // Приватные данные игры пользователя
 
         // --- Utility Functions for Firebase API Calls with Exponential Backoff ---
         async function callFirebaseApi(apiCall, maxRetries = 5, delay = 1000) {
@@ -282,7 +294,8 @@
 
         // --- Game Initialization ---
         window.onload = async function() {
-            const app = initializeApp(firebaseConfig);
+            // Инициализируем Firebase с вашей конфигурацией
+            const app = initializeApp(YOUR_FIREBASE_CONFIG);
             auth = getAuth(app);
             db = getFirestore(app);
 
@@ -291,22 +304,16 @@
                 if (user) {
                     firebaseUserId = user.uid;
                     firebaseUserIdDisplay.textContent = firebaseUserId;
-                    // Try to load last used username from local storage if any
                     const lastUsername = localStorage.getItem(`lastUsername_${firebaseUserId}`);
                     if (lastUsername) {
                         usernameInput.value = lastUsername;
                         registrationMessage.textContent = `Добро пожаловать обратно, ${lastUsername}! Нажмите "Начать игру".`;
                     }
-                    registrationOverlay.classList.remove('hidden'); // Show registration if auth is ready
+                    registrationOverlay.classList.remove('hidden');
                 } else {
-                    // Sign in anonymously if no user or signed out
+                    // Всегда входим анонимно для GitHub Pages, так как нет __initial_auth_token
                     try {
-                        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                        if (initialAuthToken) {
-                            await callFirebaseApi(() => signInWithCustomToken(auth, initialAuthToken));
-                        } else {
-                            await callFirebaseApi(() => signInAnonymously(auth));
-                        }
+                        await callFirebaseApi(() => signInAnonymously(auth));
                     } catch (error) {
                         console.error("Ошибка анонимной аутентификации Firebase:", error);
                         registrationMessage.textContent = "Ошибка аутентификации. Пожалуйста, попробуйте еще раз.";
@@ -315,11 +322,10 @@
                 }
             });
 
-            // Initialize current prices with initial prices
             for (const key in initialCryptocurrencies) {
                 currentPrices[key] = initialCryptocurrencies[key].initialPrice;
             }
-            populateCryptoDropdown(); // Populate dropdown regardless of game state
+            populateCryptoDropdown();
         };
 
         // --- Registration/Login Logic ---
@@ -335,40 +341,34 @@
             showRegistrationMessage('Загрузка...', 'info');
 
             try {
-                // Изменено: Используем collection() для получения ссылки на коллекцию, а затем doc() для ссылки на документ
                 const usernamesCollectionRef = collection(db, USERNAME_COLLECTION_PATH);
                 const usernameDocRef = doc(usernamesCollectionRef, username);
                 const usernameDocSnap = await callFirebaseApi(() => getDoc(usernameDocRef));
 
                 if (usernameDocSnap.exists()) {
-                    // Username exists
                     const data = usernameDocSnap.data();
                     if (data.firebaseUid !== firebaseUserId) {
-                        // Username is taken by another user
                         showRegistrationMessage('Это имя пользователя уже занято.', 'error');
                         startGameBtn.disabled = false;
                         registrationLoader.classList.add('hidden');
                         return;
                     }
-                    // Current user already owns this username, proceed to load game
                     showRegistrationMessage(`Добро пожаловать обратно, ${username}! Загрузка прогресса...`, 'info');
                     currentUsername = username;
                     displayUsernameEl.textContent = currentUsername;
                     await loadGameState();
                 } else {
-                    // Username is available, claim it for this Firebase user
                     await callFirebaseApi(() => setDoc(usernameDocRef, { firebaseUid: firebaseUserId }));
                     showRegistrationMessage(`Привет, ${username}! Начинаем новую игру...`, 'success');
                     currentUsername = username;
                     displayUsernameEl.textContent = currentUsername;
-                    // Initialize and save new game state
                     await initializeNewGameState();
                 }
 
-                localStorage.setItem(`lastUsername_${firebaseUserId}`, username); // Remember last used username
-                registrationOverlay.classList.add('hidden'); // Hide registration overlay
-                mainGameUI.classList.remove('hidden'); // Show main game UI
-                updateUI(); // Initial UI update for the game
+                localStorage.setItem(`lastUsername_${firebaseUserId}`, username);
+                registrationOverlay.classList.add('hidden');
+                mainGameUI.classList.remove('hidden');
+                updateUI();
                 showGameMessage(`Начинаем игру как ${currentUsername}!`, 'info');
 
             } catch (error) {
@@ -385,7 +385,7 @@
         async function initializeNewGameState() {
             fiatBalance = 1000.00;
             cryptocurrencies = JSON.parse(JSON.stringify(initialCryptocurrencies));
-            await saveGameState(); // Save initial state to Firestore
+            await saveGameState();
         }
 
         async function loadGameState() {
@@ -395,13 +395,11 @@
             if (gameDataSnap.exists()) {
                 const data = gameDataSnap.data();
                 fiatBalance = data.fiatBalance;
-                // Ensure cryptocurrencies is always an object, even if serialized as string
                 cryptocurrencies = JSON.parse(data.cryptocurrencies || JSON.stringify(initialCryptocurrencies));
-                // Update initial prices based on loaded data
                 for (const key in cryptocurrencies) {
-                    if (cryptocurrencies[key].initialPrice) { // Use initialPrice from saved data if present
+                    if (cryptocurrencies[key].initialPrice) {
                         currentPrices[key] = cryptocurrencies[key].initialPrice;
-                    } else if (initialCryptocurrencies[key]) { // Fallback to initial default if not in saved
+                    } else if (initialCryptocurrencies[key]) {
                          currentPrices[key] = initialCryptocurrencies[key].initialPrice;
                     }
                 }
@@ -420,7 +418,7 @@
             const gameDataDocRef = doc(db, USER_GAMEDATA_DOC(firebaseUserId));
             const dataToSave = {
                 fiatBalance: fiatBalance,
-                cryptocurrencies: JSON.stringify(cryptocurrencies), // Store as string
+                cryptocurrencies: JSON.stringify(cryptocurrencies),
                 username: currentUsername,
                 lastUpdated: new Date()
             };
@@ -435,7 +433,6 @@
 
         // --- Game Logic ---
 
-        // Populate the cryptocurrency selection dropdown
         function populateCryptoDropdown() {
             for (const key in cryptocurrencies) {
                 const option = document.createElement('option');
@@ -445,13 +442,11 @@
             }
         }
 
-        // Event listener for crypto selection change
         selectCryptoEl.addEventListener('change', (event) => {
             selectedCryptoId = event.target.value;
             updateUI();
         });
 
-        // Update UI elements
         function updateUI() {
             fiatBalanceEl.textContent = `$${fiatBalance.toFixed(2)}`;
 
@@ -486,10 +481,9 @@
             mineBtn.disabled = false;
         }
 
-        // Display messages to the user for registration
         function showRegistrationMessage(msg, type = 'info') {
             registrationMessage.textContent = msg;
-            registrationMessage.className = 'message mt-4'; // Reset classes
+            registrationMessage.className = 'message mt-4';
             if (type === 'error') {
                 registrationMessage.classList.add('bg-red-700', 'text-red-100');
             } else if (type === 'success') {
@@ -499,10 +493,9 @@
             }
         }
 
-        // Display messages to the user for main game
         function showGameMessage(msg, type = 'info') {
             messageBox.textContent = msg;
-            messageBox.className = 'message'; // Reset classes
+            messageBox.className = 'message';
             if (type === 'error') {
                 messageBox.classList.add('bg-red-700', 'text-red-100');
             } else if (type === 'success') {
