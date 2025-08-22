@@ -1,96 +1,276 @@
-import React from 'react';
-import { Github, Linkedin, Twitter, Instagram, Globe } from 'lucide-react'; // Используем lucide-react для иконок
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моя Биография</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Inter for modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for social media icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #0f172a; /* Tailwind slate-900 */
+            color: #e2e8f0; /* Tailwind slate-200 */
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align items to the top for better content display */
+            min-height: 100vh;
+            padding: 1rem;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            max-width: 900px; /* Increased max-width for better display */
+            background-color: #1e293b; /* Tailwind slate-800 */
+            border-radius: 1.5rem; /* Rounded xl */
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2); /* shadow-xl */
+            border: 1px solid #334155; /* Tailwind slate-700 */
+            overflow: hidden;
+            margin-top: 2rem; /* Add some margin from the top */
+            margin-bottom: 2rem; /* Add some margin at the bottom */
+        }
+        .profile-banner {
+            position: relative;
+            height: 192px; /* h-48 */
+            background-color: #334155; /* Fallback background */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .profile-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .avatar-container {
+            position: absolute;
+            bottom: -64px; /* -bottom-16 */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 128px; /* w-32 */
+            height: 128px; /* h-32 */
+            border-radius: 9999px; /* rounded-full */
+            border: 4px solid #1e293b; /* border-slate-800 */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-lg */
+            transition: transform 0.3s ease;
+        }
+        .avatar-container:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
+        .avatar-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 9999px;
+        }
+        .profile-info {
+            padding-top: 100px; /* pt-20 to clear avatar */
+            padding-bottom: 2rem; /* pb-8 */
+            padding-left: 1rem; /* px-4 */
+            padding-right: 1rem; /* px-4 */
+            text-align: center;
+        }
+        .profile-name {
+            font-size: 2.25rem; /* text-4xl */
+            font-weight: 800; /* font-extrabold */
+            color: #60a5fa; /* text-blue-400 */
+            margin-bottom: 0.5rem; /* mb-2 */
+        }
+        .profile-title {
+            font-size: 1.125rem; /* text-lg */
+            color: #94a3b8; /* text-slate-400 */
+            font-weight: 500; /* font-medium */
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+        .social-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem; /* gap-4 */
+            margin-bottom: 2rem; /* mb-8 */
+        }
+        .social-button {
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Center content in button */
+            gap: 0.5rem; /* space-x-2 */
+            background-color: #3b82f6; /* bg-blue-600 */
+            color: white;
+            font-weight: 600; /* font-semibold */
+            padding: 0.75rem 1rem; /* py-2 px-4 */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* shadow-md */
+            transition: all 0.3s ease;
+            transform: translateY(0);
+            border: none;
+            cursor: pointer;
+        }
+        .social-button:hover {
+            background-color: #2563eb; /* hover:bg-blue-700 */
+            transform: translateY(-4px) scale(1.05); /* hover:-translate-y-1 hover:scale-105 */
+        }
+        .social-button:focus {
+            outline: none;
+            ring: 2px solid #60a5fa; /* focus:ring-2 focus:ring-blue-500 */
+            ring-opacity: 0.75; /* focus:ring-opacity-75 */
+        }
+        .bio-section {
+            text-align: left;
+            background-color: #334155; /* bg-slate-700 */
+            padding: 1.5rem; /* p-6 */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1); /* shadow-inner */
+            border: 1px solid #475569; /* border-slate-600 */
+            margin-left: 1rem;
+            margin-right: 1rem;
+        }
+        .bio-section h2 {
+            font-size: 1.875rem; /* text-3xl */
+            font-weight: 700; /* font-bold */
+            color: #93c5fd; /* text-blue-300 */
+            margin-bottom: 1rem; /* mb-4 */
+            text-align: center;
+        }
+        .bio-section p {
+            margin-bottom: 1rem; /* mb-4 */
+            line-height: 1.625; /* leading-relaxed */
+            color: #cbd5e1; /* text-slate-300 */
+        }
+        .bio-section p:last-child {
+            margin-bottom: 0;
+        }
 
-const App = () => {
-  // Данные для профиля (можно легко изменить)
-  const profileData = {
-    name: 'Имя Фамилия',
-    title: 'Веб-разработчик | Креативный кодер',
-    bio: [
-      'Привет! Я веб-разработчик с многолетним опытом создания динамичных и адаптивных веб-приложений. Моя страсть — превращать сложные идеи в интуитивно понятные пользовательские интерфейсы.',
-      'Я специализируюсь на React, Tailwind CSS и современных JavaScript-фреймворках, всегда стремясь к чистому коду и лучшим практикам разработки. В свободное время я люблю исследовать новые технологии и заниматься творческим кодированием.',
-      'Буду рад сотрудничеству и новым интересным проектам!'
-    ],
-    bannerUrl: 'https://placehold.co/1200x300/1e293b/94a3b8?text=ФОН ПРОФИЛЯ', // Placeholder banner image
-    avatarUrl: 'https://placehold.co/150x150/60a5fa/ffffff?text=АВАТАР', // Placeholder avatar image
-    socialLinks: [
-      { name: 'GitHub', icon: Github, url: 'https://github.com/uglykode' },
-      { name: 'Telegram Channel', icon: Globe, url: 'https://t.me/KodePage' },
-    ],
-  };
-
-  // Функция для обработки переходов по ссылкам (используем switch case для эмуляции навигации)
-  const handleSocialClick = (url) => {
-    switch (url) {
-      case 'https://github.com/uglykode':
-      case 'https://t.me/KodePage':
-        window.open(url, '_blank'); // Открываем в новой вкладке
-        break;
-      default:
-        console.log('Неизвестная ссылка:', url);
-    }
-  };
-
-  return (
-    <div className="min-h-screen bg-slate-900 text-slate-200 flex flex-col items-center p-4 sm:p-6">
-      <div className="w-full max-w-4xl bg-slate-800 rounded-xl shadow-xl overflow-hidden border border-slate-700">
-        {/* Баннер профиля */}
-        <div className="relative h-48 sm:h-64 bg-slate-700 flex items-center justify-center">
-          <img
-            src={profileData.bannerUrl}
-            alt="Баннер профиля"
-            className="w-full h-full object-cover"
-            onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/1200x300/1e293b/94a3b8?text=ФОН ПРОФИЛЯ'; }} // Fallback image
-          />
-          {/* Аватар профиля */}
-          <div className="absolute -bottom-16 sm:-bottom-20 left-1/2 -translate-x-1/2">
-            <img
-              src={profileData.avatarUrl}
-              alt="Аватар профиля"
-              className="w-32 h-32 sm:w-40 sm:h-40 rounded-full border-4 border-slate-800 object-cover shadow-lg transition-transform duration-300 hover:scale-105"
-              onError={(e) => { e.target.onerror = null; e.target.src = 'https://placehold.co/150x150/60a5fa/ffffff?text=АВАТАР'; }} // Fallback image
-            />
-          </div>
+        /* Responsive adjustments */
+        @media (min-width: 640px) { /* sm breakpoint */
+            .profile-banner {
+                height: 256px; /* sm:h-64 */
+            }
+            .avatar-container {
+                bottom: -80px; /* sm:-bottom-20 */
+                width: 160px; /* sm:w-40 */
+                height: 160px; /* sm:h-40 */
+            }
+            .profile-info {
+                padding-top: 100px; /* sm:pt-24 */
+                padding-bottom: 2.5rem; /* sm:pb-10 */
+                padding-left: 2rem; /* sm:px-8 */
+                padding-right: 2rem; /* sm:px-8 */
+            }
+            .profile-name {
+                font-size: 3rem; /* sm:text-5xl */
+            }
+            .profile-title {
+                font-size: 1.25rem; /* sm:text-xl */
+            }
+            .bio-section {
+                padding: 2rem; /* sm:p-8 */
+                margin-left: 2rem;
+                margin-right: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Profile Banner -->
+        <div class="profile-banner">
+            <img id="bannerImage" src="https://placehold.co/1200x300/1e293b/94a3b8?text=ФОН ПРОФИЛЯ" alt="Баннер профиля">
+            <!-- Profile Avatar -->
+            <div class="avatar-container">
+                <img id="avatarImage" src="https://placehold.co/150x150/60a5fa/ffffff?text=АВАТАР" alt="Аватар профиля">
+            </div>
         </div>
 
-        {/* Информация о профиле */}
-        <div className="pt-20 pb-8 sm:pt-24 sm:pb-10 px-4 sm:px-8 text-center">
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-blue-400 mb-2">
-            {profileData.name}
-          </h1>
-          <p className="text-lg sm:text-xl text-slate-400 font-medium mb-6">
-            {profileData.title}
-          </p>
+        <!-- Profile Information -->
+        <div class="profile-info">
+            <h1 id="profileName" class="profile-name">Имя Фамилия</h1>
+            <p id="profileTitle" class="profile-title">Веб-разработчик | Креативный кодер</p>
 
-          {/* Ссылки на социальные сети */}
-          <div className="flex flex-wrap justify-center gap-4 mb-8">
-            {profileData.socialLinks.map((link) => (
-              <button
-                key={link.name}
-                onClick={() => handleSocialClick(link.url)}
-                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-300 transform hover:-translate-y-1 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75"
-              >
-                <link.icon size={20} />
-                <span>{link.name}</span>
-              </button>
-            ))}
-          </div>
+            <!-- Social Links -->
+            <div id="socialLinks" class="social-links">
+                <!-- Social buttons will be injected here by JavaScript -->
+            </div>
 
-          {/* Раздел биографии */}
-          <div className="text-left bg-slate-700 p-6 sm:p-8 rounded-lg shadow-inner border border-slate-600">
-            <h2 className="text-3xl font-bold text-blue-300 mb-4 text-center">
-              Обо мне
-            </h2>
-            {profileData.bio.map((paragraph, index) => (
-              <p key={index} className="mb-4 last:mb-0 leading-relaxed text-slate-300">
-                {paragraph}
-              </p>
-            ))}
-          </div>
+            <!-- Bio Section -->
+            <div class="bio-section">
+                <h2 class="text-3xl font-bold text-blue-300 mb-4 text-center">Обо мне</h2>
+                <div id="bioText">
+                    <!-- Bio paragraphs will be injected here by JavaScript -->
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  );
-};
 
-export default App;
+    <script>
+        const profileData = {
+            name: 'Имя Фамилия',
+            title: 'Веб-разработчик | Креативный кодер',
+            bio: [
+                'Привет! Я веб-разработчик с многолетним опытом создания динамичных и адаптивных веб-приложений. Моя страсть — превращать сложные идеи в интуитивно понятные пользовательские интерфейсы.',
+                'Я специализируюсь на React, Tailwind CSS и современных JavaScript-фреймворках, всегда стремясь к чистому коду и лучшим практикам разработки. В свободное время я люблю исследовать новые технологии и заниматься творческим кодированием.',
+                'Буду рад сотрудничеству и новым интересным проектам!'
+            ],
+            bannerUrl: 'https://placehold.co/1200x300/1e293b/94a3b8?text=ФОН ПРОФИЛЯ',
+            avatarUrl: 'https://placehold.co/150x150/60a5fa/ffffff?text=АВАТАР',
+            socialLinks: [
+                { name: 'GitHub', iconClass: 'fab fa-github', url: 'https://github.com/yourusername' },
+                { name: 'LinkedIn', iconClass: 'fab fa-linkedin-in', url: 'https://linkedin.com/in/yourusername' },
+                { name: 'Twitter', iconClass: 'fab fa-twitter', url: 'https://twitter.com/yourusername' },
+                { name: 'Instagram', iconClass: 'fab fa-instagram', url: 'https://instagram.com/yourusername' },
+                { name: 'Telegram', iconClass: 'fab fa-telegram-plane', url: 'https://t.me/yourtelegram' },
+                { name: 'TikTok', iconClass: 'fab fa-tiktok', url: 'https://tiktok.com/@yourtiktok' },
+                { name: 'Guns.lol', iconClass: 'fas fa-globe', url: 'https://guns.lol/yourprofile' },
+                { name: 'Портфолио', iconClass: 'fas fa-globe', url: 'https://yourportfolio.com' },
+            ],
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Update profile information
+            document.getElementById('profileName').textContent = profileData.name;
+            document.getElementById('profileTitle').textContent = profileData.title;
+
+            // Update banner and avatar images
+            const bannerImage = document.getElementById('bannerImage');
+            bannerImage.src = profileData.bannerUrl;
+            bannerImage.onerror = () => { bannerImage.src = 'https://placehold.co/1200x300/1e293b/94a3b8?text=ФОН ПРОФИЛЯ'; };
+
+            const avatarImage = document.getElementById('avatarImage');
+            avatarImage.src = profileData.avatarUrl;
+            avatarImage.onerror = () => { avatarImage.src = 'https://placehold.co/150x150/60a5fa/ffffff?text=АВАТАР'; };
+
+            // Populate bio text
+            const bioTextContainer = document.getElementById('bioText');
+            profileData.bio.forEach(paragraphText => {
+                const p = document.createElement('p');
+                p.textContent = paragraphText;
+                bioTextContainer.appendChild(p);
+            });
+
+            // Populate social links
+            const socialLinksContainer = document.getElementById('socialLinks');
+            profileData.socialLinks.forEach(link => {
+                const button = document.createElement('button');
+                button.className = 'social-button';
+                button.onclick = () => window.open(link.url, '_blank');
+
+                const icon = document.createElement('i');
+                icon.className = link.iconClass;
+                icon.style.fontSize = '20px'; // Equivalent to Lucide's default size
+
+                const span = document.createElement('span');
+                span.textContent = link.name;
+
+                button.appendChild(icon);
+                button.appendChild(span);
+                socialLinksContainer.appendChild(button);
+            });
+        });
+    </script>
+</body>
+</html>
