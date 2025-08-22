@@ -1,0 +1,44 @@
+body {
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: sans-serif;
+}
+
+#game-container {
+    width: 400px;
+    height: 600px;
+    background-color: #a3d9ff;
+    border: 2px solid #333;
+    position: relative;
+    overflow: hidden;
+}
+
+#basket {
+    width: 60px;
+    height: 60px;
+    background-color: #8b4513;
+    position: absolute;
+    bottom: 10px;
+    left: 170px;
+}
+
+.apple {
+    width: 30px;
+    height: 30px;
+    background-color: red;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+}
+
+#score-display {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 24px;
+    font-weight: bold;
+}
